@@ -1,0 +1,249 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		596FF5D81A5FA0240001424D /* RestClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596FF5D71A5FA0240001424D /* RestClient.swift */; };
+		5990B0921A5DCA8A00C2AE73 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5990B0911A5DCA8A00C2AE73 /* main.swift */; };
+		5990B09E1A5DD2DE00C2AE73 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5990B09D1A5DD2DE00C2AE73 /* SwiftyJSON.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5990B08C1A5DCA8A00C2AE73 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		596FF5D71A5FA0240001424D /* RestClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RestClient.swift; path = RESTClient/RestClient.swift; sourceTree = "<group>"; };
+		5990B08E1A5DCA8A00C2AE73 /* RESTClient */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RESTClient; sourceTree = BUILT_PRODUCTS_DIR; };
+		5990B0911A5DCA8A00C2AE73 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		5990B09D1A5DD2DE00C2AE73 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = ../SwiftyJSON/SwiftyJSON/SwiftyJSON.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5990B08B1A5DCA8A00C2AE73 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5990B0851A5DCA8A00C2AE73 = {
+			isa = PBXGroup;
+			children = (
+				596FF5D71A5FA0240001424D /* RestClient.swift */,
+				5990B09D1A5DD2DE00C2AE73 /* SwiftyJSON.swift */,
+				5990B0901A5DCA8A00C2AE73 /* RESTClient */,
+				5990B08F1A5DCA8A00C2AE73 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5990B08F1A5DCA8A00C2AE73 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5990B08E1A5DCA8A00C2AE73 /* RESTClient */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5990B0901A5DCA8A00C2AE73 /* RESTClient */ = {
+			isa = PBXGroup;
+			children = (
+				5990B0911A5DCA8A00C2AE73 /* main.swift */,
+			);
+			path = RESTClient;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5990B08D1A5DCA8A00C2AE73 /* RESTClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5990B0951A5DCA8A00C2AE73 /* Build configuration list for PBXNativeTarget "RESTClient" */;
+			buildPhases = (
+				5990B08A1A5DCA8A00C2AE73 /* Sources */,
+				5990B08B1A5DCA8A00C2AE73 /* Frameworks */,
+				5990B08C1A5DCA8A00C2AE73 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RESTClient;
+			productName = "REST-Test";
+			productReference = 5990B08E1A5DCA8A00C2AE73 /* RESTClient */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5990B0861A5DCA8A00C2AE73 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Michael Main";
+				TargetAttributes = {
+					5990B08D1A5DCA8A00C2AE73 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 5990B0891A5DCA8A00C2AE73 /* Build configuration list for PBXProject "RESTClient" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5990B0851A5DCA8A00C2AE73;
+			productRefGroup = 5990B08F1A5DCA8A00C2AE73 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5990B08D1A5DCA8A00C2AE73 /* RESTClient */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5990B08A1A5DCA8A00C2AE73 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5990B0921A5DCA8A00C2AE73 /* main.swift in Sources */,
+				596FF5D81A5FA0240001424D /* RestClient.swift in Sources */,
+				5990B09E1A5DD2DE00C2AE73 /* SwiftyJSON.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5990B0931A5DCA8A00C2AE73 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5990B0941A5DCA8A00C2AE73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		5990B0961A5DCA8A00C2AE73 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = RESTClient;
+			};
+			name = Debug;
+		};
+		5990B0971A5DCA8A00C2AE73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = RESTClient;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5990B0891A5DCA8A00C2AE73 /* Build configuration list for PBXProject "RESTClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5990B0931A5DCA8A00C2AE73 /* Debug */,
+				5990B0941A5DCA8A00C2AE73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5990B0951A5DCA8A00C2AE73 /* Build configuration list for PBXNativeTarget "RESTClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5990B0961A5DCA8A00C2AE73 /* Debug */,
+				5990B0971A5DCA8A00C2AE73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5990B0861A5DCA8A00C2AE73 /* Project object */;
+}

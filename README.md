@@ -17,7 +17,7 @@ This library relies on SwiftyJSON.  To integrate, simply drag SwiftyJSON.swift f
 			"category": "user"
 		]).sendSync().getResponseBody()
 
-  // Print out returned JSON
+	// Print out returned JSON
 	for (key, value) in dict {
 		println("\(key) => \(value)")
 	}
@@ -32,15 +32,15 @@ This library relies on SwiftyJSON.  To integrate, simply drag SwiftyJSON.swift f
 			"category": "user"
 		]).sendAsync()
 
-  //  Wait for completion of async call (you can also check client.isComplete())
+  	//  Wait for completion of async call (you can also check client.isComplete())
 	client.waitForCompletion()
   
-  // Print out returned JSON
+  	// Print out returned JSON
 	for (key, value) in client.getResponseBody() {
 		println("\(key) => \(value)")
 	}
 	
-		// RestClient async post
+	// RestClient async post
 	dict = RestClient.post(
 		hostname: "localhost",
 		port: "8080",

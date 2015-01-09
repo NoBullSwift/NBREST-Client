@@ -51,4 +51,4 @@ This library relies on SwiftyJSON.  To integrate, simply drag SwiftyJSON.swift f
 			"type": "shirt"
 		]).sendSync()
 		
-Other HTTP methods are similar.  The only difference between GET and DELET from the others is that they have a query parameter instead of a body parameter.
+Other HTTP methods are similar.  The only difference between GET and DELETE from the others is that they have a query parameter instead of a body parameter.

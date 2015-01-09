@@ -95,8 +95,8 @@ class RestClient {
         return RestClient(method: "POST", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
     }
     
-    class func delete(#hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> RestClient {
-        return RestClient(method: "DELETE", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
+    class func delete(#hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> RestClient {
+        return RestClient(method: "DELETE", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
     }
     
     func sendSync() -> RestClient {

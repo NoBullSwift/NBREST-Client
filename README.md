@@ -1,9 +1,9 @@
-# Swift-REST-Client
-An easy to use REST Client for Swift (as far as I can tell there aren't any)
+# NBREST-Client
+An easy, no bullshit way to use REST Client for Swift (as far as I can tell there aren't any).
 
 
 # Dependencies
-This library relies on SwiftyJSON.  To integrate, simply drag SwiftyJSON.swift from finder onto the project in XCode.  Then do the same with RestClient.swift
+This library relies on SwiftyJSON.  To integrate, simply drag SwiftyJSON.swift from finder onto the project in XCode.  Then do the same with RestClient.swift.  Soon I will replace this with NBJSON...the no bullshit JSON library.
 
 # Example
 

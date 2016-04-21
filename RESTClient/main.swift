@@ -1,29 +1,52 @@
 import Foundation
 
-// RestClient sync get
-var dict = RestClient.get(
-    hostname: "localhost",
-    port: "8080",
-    uri: "/AFTSurvey/entry/current",
-    query: [
-        "id": 1,
-        "category": "user"
-    ]).sendSync().getResponseBody()
-
-for (key, value) in dict {
-    println("\(key) => \(value)")
+func displayResponse(response: NBRestResponse) {
+    print("Status Code: \(response.statusCode)")
+    print("Headers:")
+    for (key, value) in response.headers {
+        print("\t\(key): \(value)")
+    }
+    
+    print("Body:")
+    NBJSON.Utils.printObject(response.body, tabs: 1)
 }
 
-// RestClient async post
-dict = RestClient.post(
+// Setup default object mappers
+NBRestClient.setupDefaults()
+
+// RestClient get test
+var postRequest = NBRestClient.post(
     hostname: "localhost",
     port: "8080",
-    uri: "/AFTSurvey/entry/vote",
+    uri: "/collectamundo/v1/collectables",
     body: [
-        "id": "test1",
-        "rating": "10"
-    ]).sendSync().getResponseBody()
+        "name": "Super Street Fighter II"
+    ]
+)
 
-for (key, value) in dict {
-    println("\(key) => \(value)")
-}
+postRequest.setContentType(NBRestClient.NBMediaType.APPLICATION_JSON)
+postRequest.setAcceptType(NBRestClient.NBMediaType.APPLICATION_JSON)
+
+var response : NBRestResponse = postRequest.sendSync()
+displayResponse(response)
+
+// RestClient get test
+var getRequest = NBRestClient.get(
+    hostname: "localhost",
+    port: "8080",
+    uri: "/collectamundo/v1/collectables"
+    )
+
+// Set content and accept types
+getRequest.setContentType(NBRestClient.NBMediaType.APPLICATION_JSON)
+getRequest.setAcceptType(NBRestClient.NBMediaType.APPLICATION_JSON)
+
+// Test Sync Call
+response = getRequest.sendSync()
+displayResponse(response)
+
+// Test Async Call
+getRequest.sendAsync({(response: NBRestResponse!) -> Void in
+    displayResponse(response)
+})
+getRequest.waitForCompletion()

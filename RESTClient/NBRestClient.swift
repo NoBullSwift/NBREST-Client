@@ -20,9 +20,49 @@ func createQueryString(pairs: Dictionary<String, AnyObject>) -> String {
     return query
 }
 
-class RestClient {
+enum ObjectMapperError : ErrorType {
+    case NoObjectMapper
+}
+
+class NBRestResponse {
+    var response : NSHTTPURLResponse?
+    var statusCode : Int!
+    var contentType : String!
+    var headers : Dictionary<String, String>! = [:]
+    var body : Any!
+    var error : NSError?
+    
+    init(statusCode: Int, contentType: String, headers: Dictionary<String, String>, body: Any) {
+        self.statusCode = statusCode
+        self.contentType = contentType
+        self.headers = headers
+        self.body = body
+    }
+    
+    init(response: NSHTTPURLResponse, data: NSData?) {
+        let responseString : String = String(data: data!, encoding: NSUTF8StringEncoding)!
+        do {
+            self.response = response
+            self.statusCode = response.statusCode
+            self.contentType = response.allHeaderFields["Content-Type"] as? String
+            self.body = try NBRestClient.consumeResponse(self.contentType!, responseBody: responseString)
+            
+            for (key, value) in response.allHeaderFields {
+                headers[key as! String] = value as? String
+            }
+        } catch let error as NSError {
+            print(error)
+            self.error = error
+        }
+    }
+}
+
+class NBRestRequest {
     var request : NSMutableURLRequest = NSMutableURLRequest()
-    var responseBody : Any?
+    var contentType: String?
+    var acceptType: String?
+    var response : NBRestResponse?
+    var headers : Dictionary<String, String> = [:]
     var error : NSError!
     
     var completed : Bool = false
@@ -47,16 +87,10 @@ class RestClient {
                 let json = NBJSON.Parser.stringify(body)
                 request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
                 addHeader("Content-Length", value: "\(json.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))")
-                print("LENGTH: \(json.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)) bytes")
             } else {
                 url += createQueryString(body)
             }
         }
-        
-        addHeader("Accept", value: "application/json")
-        addHeader("Content-Type", value: "application/json")
-        
-        print("URL: \(url)")
         
         request.URL = NSURL(string: url)
         request.HTTPMethod = method
@@ -66,52 +100,88 @@ class RestClient {
         }
     }
     
-    func addHeader(key : String, value : String) -> RestClient {
-        request.addValue(value, forHTTPHeaderField: key)
+    func addHeader(key : String, value : String) -> NBRestRequest {
+        if (key == "Content-Type") {
+            contentType = value
+        } else if (key == "Accept") {
+            acceptType = value
+        }
+        
+        headers[key] = value
         return self
     }
     
-    class func get(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> RestClient {
-        return RestClient(method: "GET", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
-    }
-    
-    class func put(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> RestClient {
-        return RestClient(method: "PUT", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
-    }
-    
-    class func post(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> RestClient {
-        return RestClient(method: "POST", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
-    }
-    
-    class func delete(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> RestClient {
-        return RestClient(method: "DELETE", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
-    }
-    
-    func sendSync() throws -> RestClient {
-        let data = try NSURLConnection.sendSynchronousRequest(request, returningResponse: nil)
-        
-        let jsonString : String = String(data: data, encoding: NSUTF8StringEncoding)!
-        self.responseBody = NBJSON.Parser.parseJson(jsonString)
-        self.completed = true
-        
+    func setContentType(contentType: String) -> NBRestRequest {
+        self.contentType = contentType
         return self
     }
     
-    func sendAsync() -> RestClient {
+    func setAcceptType(acceptType: String) -> NBRestRequest {
+        self.acceptType = acceptType
+        return self
+    }
+    
+    private func setupHeaders() {
+        if (contentType == nil) {
+            contentType = "*/*"
+        }
+        
+        request.addValue(contentType!, forHTTPHeaderField: "Content-Type")
+        
+        if (acceptType != nil) {
+            acceptType = "*/*"
+        }
+        
+        request.addValue(acceptType!, forHTTPHeaderField: "Accept")
+        
+        for (key, value) in headers {
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+    }
+    
+    func sendSync() -> NBRestResponse! {
+        setupHeaders()
+        self.response = nil
+        self.completed = false
+        
+        do {
+            var urlResponse : NSURLResponse?
+            let data = try NSURLConnection.sendSynchronousRequest(request, returningResponse: &urlResponse)
+            let httpResponse: NSHTTPURLResponse = urlResponse as! NSHTTPURLResponse
+            self.response = NBRestResponse(response: httpResponse, data: data)
+            self.completed = true
+            
+            return self.response
+        } catch let error as NSError {
+            print(error.description)
+            self.error = error
+            return nil
+        }
+    }
+    
+    func sendAsync() -> Void {
+        sendAsync({(response: NBRestResponse!) -> Void in
+        })
+    }
+    
+    func sendAsync(completionHandler: ((response : NBRestResponse!) -> Void)) -> Void {
+        self.response = nil
+        self.completed = false
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue(), completionHandler: { (response:NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             if (error != nil || data == nil) {
                 print("ERROR: \(error?.description)")
-                self.responseBody = [:]
+                self.response = nil
                 self.completed = true
+                self.error = error
                 return
             }
             
-            let jsonString : String = String(data: data!, encoding: NSUTF8StringEncoding)!
-            self.responseBody = NBJSON.Parser.parseJson(jsonString)
+            let httpResponse: NSHTTPURLResponse = response as! NSHTTPURLResponse
+            
+            self.response = NBRestResponse(response: httpResponse, data: data)
+            completionHandler(response: self.response)
             self.completed = true
         })
-        
-        return self
     }
     
     func isComplete() -> Bool {
@@ -122,7 +192,51 @@ class RestClient {
         while !completed {}
     }
     
-    func getResponseBody() -> Any? {
-        return responseBody
+    func getResponse() -> Any? {
+        return response
+    }
+}
+
+class NBRestClient {
+    static var objectMappers: Dictionary<String, NBObjectMapper> = [:]
+    class NBMediaType {
+        static var APPLICATION_JSON = "application/json"
+        static var APPLICATION_XML = "application/xml"
+    }
+    
+    class func setupDefaults() {
+        addObjectMapperFor(NBMediaType.APPLICATION_JSON, mapper: NBJSON.NBOJSONbjectMapper())
+    }
+    
+    class func consumeResponse(contentType: String, responseBody: String) throws -> Any? {
+        let objectMapper = NBRestClient.getObjectMapperFor(contentType)
+        
+        guard objectMapper != nil else { throw ObjectMapperError.NoObjectMapper }
+        
+        return objectMapper?.deserialize(responseBody)
+    }
+    
+    class func get(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+        return NBRestRequest(method: "GET", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
+    }
+    
+    class func put(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+        return NBRestRequest(method: "PUT", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
+    }
+    
+    class func post(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+        return NBRestRequest(method: "POST", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
+    }
+    
+    class func delete(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+        return NBRestRequest(method: "DELETE", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
+    }
+    
+    class func addObjectMapperFor(mimeType: String, mapper: NBObjectMapper) {
+        objectMappers[mimeType] = mapper
+    }
+    
+    class func getObjectMapperFor(mimeType: String) -> NBObjectMapper? {
+        return objectMappers[mimeType]
     }
 }

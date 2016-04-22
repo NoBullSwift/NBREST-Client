@@ -56,3 +56,9 @@ This library depends on NBJSON, the No Bull JSON parser.  Just include NBJSON.sw
     })
 		
 Other HTTP methods are similar.  The only difference between GET and DELETE from the others is that they have a query parameter instead of a body parameter.
+
+## Version Details
+
+### Version 1.0
+
+Providing basic functionality.  Body passed to POST or PUT can be a dictionary or an array.

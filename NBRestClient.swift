@@ -8,7 +8,7 @@
 
 import Foundation
 
-func createQueryString(pairs: Dictionary<String, AnyObject>) -> String {
+func createQueryString(pairs: Dictionary<String, Any>) -> String {
     var query = ""
     var sep = "?"
     
@@ -59,16 +59,20 @@ class NBRestResponse {
 
 class NBRestRequest {
     var request : NSMutableURLRequest = NSMutableURLRequest()
+    var response : NBRestResponse?
+    var error : NSError!
+    
+    var method : String
+    var url : String
+    var headers : Dictionary<String, String> = [:]
     var contentType: String?
     var acceptType: String?
-    var response : NBRestResponse?
-    var headers : Dictionary<String, String> = [:]
-    var error : NSError!
+    var body : Any!
     
     var completed : Bool = false
     
-    init(method: String, hostname : String, port : String, uri : String, headers : Dictionary<String, String>, body : Dictionary<String, AnyObject> = [:], ssl : Bool) {
-        var url = "http://"
+    init(method: String, hostname : String, port : String, uri : String, headers : Dictionary<String, String>, body : Any!, ssl : Bool) {
+        url = "http://"
         
         if (ssl) {
             url = "https://"
@@ -82,18 +86,8 @@ class NBRestRequest {
         
         url += uri
         
-        if (!body.isEmpty) {
-            if (method != "GET" && method != "DELETE") {
-                let json = NBJSON.Parser.stringify(body)
-                request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-                addHeader("Content-Length", value: "\(json.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))")
-            } else {
-                url += createQueryString(body)
-            }
-        }
-        
-        request.URL = NSURL(string: url)
-        request.HTTPMethod = method
+        self.body = body
+        self.method = method
         
         for (key, value) in headers {
             addHeader(key, value: value)
@@ -139,10 +133,34 @@ class NBRestRequest {
         }
     }
     
+    private func setupPayload() {
+        do {
+            if (body != nil) {
+                if (method != "GET" && method != "DELETE") {
+                    let json = try NBRestClient.serializeBody(contentType!, body: body)
+                    request.HTTPBody = json.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
+                    addHeader("Content-Length", value: "\(json.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))")
+                } else {
+                    if (body is Dictionary<String, String>) {
+                        url += createQueryString(body as! Dictionary<String, String>)
+                    }
+                }
+            }
+            request.URL = NSURL(string: url)
+            request.HTTPMethod = method
+        } catch let error as NSError {
+            print(error)
+            return
+        }
+    }
+    
     func sendSync() -> NBRestResponse! {
         setupHeaders()
         self.response = nil
         self.completed = false
+        
+        // Setup payload
+        setupPayload()
         
         do {
             var urlResponse : NSURLResponse?
@@ -167,6 +185,10 @@ class NBRestRequest {
     func sendAsync(completionHandler: ((response : NBRestResponse!) -> Void)) -> Void {
         self.response = nil
         self.completed = false
+        
+        // Setup payload
+        setupPayload()
+        
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue(), completionHandler: { (response:NSURLResponse?, data: NSData?, error: NSError?) -> Void in
             if (error != nil || data == nil) {
                 print("ERROR: \(error?.description)")
@@ -216,19 +238,27 @@ class NBRestClient {
         return objectMapper?.deserialize(responseBody)
     }
     
-    class func get(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+    class func serializeBody(contentType: String, body: Any) throws -> String {
+        let objectMapper = NBRestClient.getObjectMapperFor(contentType)
+        
+        guard objectMapper != nil else { throw ObjectMapperError.NoObjectMapper }
+        
+        return (objectMapper?.serialize(body))!
+    }
+    
+    class func get(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, Any> = [:], ssl : Bool = false) -> NBRestRequest {
         return NBRestRequest(method: "GET", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
     }
     
-    class func put(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+    class func put(hostname hostname : String, port : String = "", uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, Any> = [:], ssl : Bool = false) -> NBRestRequest {
         return NBRestRequest(method: "PUT", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
     }
     
-    class func post(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+    class func post(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], body : Dictionary<String, Any> = [:], ssl : Bool = false) -> NBRestRequest {
         return NBRestRequest(method: "POST", hostname: hostname, port: port, uri: uri, headers: headers, body: body, ssl: ssl)
     }
     
-    class func delete(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, AnyObject> = [:], ssl : Bool = false) -> NBRestRequest {
+    class func delete(hostname hostname : String, port : String, uri : String, headers : Dictionary<String, String> = [:], query : Dictionary<String, Any> = [:], ssl : Bool = false) -> NBRestRequest {
         return NBRestRequest(method: "DELETE", hostname: hostname, port: port, uri: uri, headers: headers, body: query, ssl: ssl)
     }
     

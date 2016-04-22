@@ -155,26 +155,13 @@ class NBRestRequest {
     }
     
     func sendSync() -> NBRestResponse! {
-        setupHeaders()
         self.response = nil
         self.completed = false
-        
-        // Setup payload
-        setupPayload()
-        
-        do {
-            var urlResponse : NSURLResponse?
-            let data = try NSURLConnection.sendSynchronousRequest(request, returningResponse: &urlResponse)
-            let httpResponse: NSHTTPURLResponse = urlResponse as! NSHTTPURLResponse
-            self.response = NBRestResponse(response: httpResponse, data: data)
-            self.completed = true
-            
-            return self.response
-        } catch let error as NSError {
-            print(error.description)
-            self.error = error
-            return nil
-        }
+    
+        // Send asynchronously, but wait for completion
+        sendAsync()
+        waitForCompletion()
+        return self.response
     }
     
     func sendAsync() -> Void {
@@ -186,10 +173,14 @@ class NBRestRequest {
         self.response = nil
         self.completed = false
         
-        // Setup payload
+        // Reset request to empty
+        request = NSMutableURLRequest()
+        
+        // Setup payload and headers
+        setupHeaders()
         setupPayload()
         
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue(), completionHandler: { (response:NSURLResponse?, data: NSData?, error: NSError?) -> Void in
+        NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data: NSData?, response:NSURLResponse?, error: NSError?) -> Void in
             if (error != nil || data == nil) {
                 print("ERROR: \(error?.description)")
                 self.response = nil
@@ -203,7 +194,7 @@ class NBRestRequest {
             self.response = NBRestResponse(response: httpResponse, data: data)
             completionHandler(response: self.response)
             self.completed = true
-        })
+        }).resume()
     }
     
     func isComplete() -> Bool {
